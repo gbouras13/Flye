@@ -2142,7 +2142,12 @@ int bam_sort_core_ext(int is_by_qname, char* sort_by_tag, const char *fn, const 
         strncpy(g_sort_tag, sort_by_tag, 2);
     }
 
-    max_mem = _max_mem * n_threads;
+    /* on 32-bit targets (e.g. wasm32) _max_mem * n_threads can wrap around
+       (Flye passes -@ 4 -m 1G), and the buffer is malloc'ed up front: cap it */
+    if (sizeof(size_t) < 8 && _max_mem > ((size_t)1 << 30) / n_threads)
+        max_mem = (size_t)1 << 30;
+    else
+        max_mem = _max_mem * n_threads;
     buf = NULL;
     fp = sam_open_format(fn, "r", in_fmt);
     if (fp == NULL) {
