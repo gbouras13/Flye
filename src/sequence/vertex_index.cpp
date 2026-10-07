@@ -369,11 +369,18 @@ void KmerCounter::count(bool useFlatCounter)
 	{
 		throw std::runtime_error("Can't use flat counter for k-mer size > 17");
 	}
+	//the flat counter needs 4^k / 2 bytes (8 Gb for k=17), which does not
+	//fit into a 32-bit address space - fall back to the hash counter
+	if (useFlatCounter && sizeof(size_t) < 8)
+	{
+		Logger::get().debug() << "32-bit build: using hash-based k-mer counter";
+		useFlatCounter = false;
+	}
 	_useFlatCounter = useFlatCounter;
 
 	//flat array for all possible k-mers, 4 bits for each
 	//in case of k=17, takes 8Gb
-	static const size_t COUNTER_LEN = std::pow(4, Parameters::get().kmerSize) / 2;
+	static const uint64_t COUNTER_LEN = std::pow(4, Parameters::get().kmerSize) / 2;
 	if (useFlatCounter)
 	{
 		_flatCounter = new std::atomic<uint8_t>[COUNTER_LEN];
@@ -430,7 +437,7 @@ void KmerCounter::count(bool useFlatCounter)
 	Logger::get().debug() << "Updating k-mer histogram";
 	if (_useFlatCounter)
 	{
-		for (size_t kmerId = 0; kmerId < COUNTER_LEN * 2; ++kmerId)
+		for (uint64_t kmerId = 0; kmerId < COUNTER_LEN * 2; ++kmerId)
 		{
 			Kmer kmer(kmerId);
 			size_t freq = this->getFreq(kmer);

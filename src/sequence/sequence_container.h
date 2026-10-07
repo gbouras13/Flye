@@ -33,10 +33,10 @@ struct FastaRecord
 		bool strand() const		//true = positive, false = negative
 			{return !(_id % 2);}
 
-		size_t hash() const 
+		uint64_t hash() const 
 		{
-			size_t x = _id;
-			size_t z = (x += 0x9E3779B97F4A7C15ULL);
+			uint64_t x = _id;
+			uint64_t z = (x += 0x9E3779B97F4A7C15ULL);
 			z = (z ^ (z >> 30)) * 0xBF58476D1CE4E5B9ULL;
 			z = (z ^ (z >> 27)) * 0x94D049BB133111EBULL;
 			return z ^ (z >> 31);
@@ -121,7 +121,7 @@ namespace std
 	{
 		size_t operator() (const FastaRecord::Id& h) const throw() 
 		{
-			 return h.hash();
+			 return (size_t)h.hash();
 		}
 	};
 
@@ -130,10 +130,10 @@ namespace std
 	{
 		 size_t operator()(const FastaRecord::IdPair& k) const
 		 {
-			size_t lhs = std::get<0>(k).hash();
-			size_t rhs = std::get<1>(k).hash();
+			uint64_t lhs = std::get<0>(k).hash();
+			uint64_t rhs = std::get<1>(k).hash();
 			lhs ^= rhs + 0x9ddfea08eb382d69ULL + (lhs << 6) + (lhs >> 2);
-			return lhs;
+			return (size_t)lhs;
 		 }
 	};
 }
@@ -268,7 +268,7 @@ private:
 					   FastaRecord::Id> _nameIndex;
 
 	//global/local position convertions
-	const size_t MAX_SEQUENCE = 1ULL << (8 * 5);
+	const uint64_t MAX_SEQUENCE = 1ULL << (8 * 5);
 	const size_t CHUNK = 1000;
 	std::vector<OffsetPair> _sequenceOffsets;
 	std::vector<size_t> 	_offsetsHint;

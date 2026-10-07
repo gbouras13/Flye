@@ -99,12 +99,12 @@ private:
 
 		size_t get() const
 		{
-			return ((size_t)hi << 32) + (size_t)low;
+			return (size_t)(((uint64_t)hi << 32) + (uint64_t)low);
 		}
 		void set(size_t val)
 		{
-			low = val & ((1ULL << 32) - 1);
-			hi = val >> 32;
+			low = (uint64_t)val & ((1ULL << 32) - 1);
+			hi = (uint64_t)val >> 32;
 		}
 
 		uint8_t hi;

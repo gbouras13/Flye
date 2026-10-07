@@ -11,12 +11,13 @@
 #include "sequence_container.h"
 #include "../common/config.h"
 
-static_assert(sizeof(size_t) == 8, "32-bit architectures are not supported");
+//k-mers, hashes and global positions use explicit 64-bit types, so the
+//code also works where size_t is 32-bit (e.g. wasm32)
 
 class Kmer
 {
 public:
-	typedef size_t KmerRepr;
+	typedef uint64_t KmerRepr;
 
 	explicit Kmer(KmerRepr repr=0): _representation(repr) {}
 
@@ -88,10 +89,10 @@ public:
 	bool operator != (const Kmer& other) const
 		{return !(*this == other);}
 
-	size_t hash() const
+	uint64_t hash() const
 	{
-		size_t x = _representation;
-		size_t z = (x += 0x9E3779B97F4A7C15ULL);
+		uint64_t x = _representation;
+		uint64_t z = (x += 0x9E3779B97F4A7C15ULL);
 		z = (z ^ (z >> 30)) * 0xBF58476D1CE4E5B9ULL;
 		z = (z ^ (z >> 27)) * 0x94D049BB133111EBULL;
 		return z ^ (z >> 31);
@@ -102,7 +103,7 @@ public:
 		return _representation < other._representation;
 	}
 
-	size_t numRepr() {return _representation;}
+	uint64_t numRepr() {return _representation;}
 
 private:
 	KmerRepr _representation;
@@ -115,7 +116,7 @@ namespace std
 	{
 		std::size_t operator()(const Kmer& kmer) const
 		{
-			return kmer.hash();
+			return (std::size_t)kmer.hash();
 		}
 	};
 }
@@ -210,7 +211,7 @@ inline std::vector<KmerPosition> yieldMinimizers(const DnaSequence& sequence, in
 	struct KmerAndHash
 	{
 		KmerPosition kp;
-		size_t hash;
+		uint64_t hash;
 	};
 	thread_local std::deque<KmerAndHash> miniQueue;
 	miniQueue.clear();
@@ -232,7 +233,7 @@ inline std::vector<KmerPosition> yieldMinimizers(const DnaSequence& sequence, in
 	{
 		auto stdKmer = kmerPos.kmer;
 		stdKmer.standardForm();
-		size_t curHash = stdKmer.hash();
+		uint64_t curHash = stdKmer.hash();
 		
 		while (!miniQueue.empty() && miniQueue.back().hash > curHash)
 		{
