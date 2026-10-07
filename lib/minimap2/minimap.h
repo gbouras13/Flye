@@ -197,6 +197,13 @@ typedef struct mm_tbuf_s mm_tbuf_t;
 extern int mm_verbose, mm_dbg_flag; // verbose level: 0 for no info, 1 for error, 2 for warning, 3 for message (default); debugging flag
 extern double mm_realtime0; // wall-clock timer
 
+// if set, each alignment output line (SAM/PAF, without the trailing newline) is
+// passed to this callback instead of being written to stdout. Called from a single
+// thread, in input order.
+typedef void (*mm_output_hook_f)(const char *line, void *data);
+extern mm_output_hook_f mm_output_hook;
+extern void *mm_output_hook_data;
+
 /**
  * Set default or preset parameters
  *

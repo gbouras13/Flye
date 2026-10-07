@@ -52,11 +52,17 @@ polish_obj := ${patsubst %.cpp,%.o,${wildcard polishing/*.cpp}}
 polishing/%.o: polishing/%.cpp bin/polisher.cpp polishing/*.h common/*h
 	${CXX} -c ${CXXFLAGS} $< -o $@
 
+#pipeline module (single-process flye)
+pipeline_obj := ${patsubst %.cpp,%.o,${wildcard pipeline/*.cpp}}
+
+pipeline/%.o: pipeline/%.cpp pipeline/*.h polishing/*.h sequence/*.h common/*.h
+	${CXX} -c ${CXXFLAGS} $< -o $@
+
 #main module
 #main_obj := ${patsubst %.cpp,%.o,${wildcard main/*.cpp}}
 main_obj := main.o
-flye-modules: ${assemble_obj} ${sequence_obj} ${repeat_obj} ${contigger_obj} ${polish_obj} ${main_obj}
-	${CXX} ${assemble_obj} ${sequence_obj} ${repeat_obj} ${contigger_obj} ${polish_obj} ${main_obj} -o ${MODULES_BIN} ${LDFLAGS}
+flye-modules: ${assemble_obj} ${sequence_obj} ${repeat_obj} ${contigger_obj} ${polish_obj} ${pipeline_obj} ${main_obj}
+	${CXX} ${assemble_obj} ${sequence_obj} ${repeat_obj} ${contigger_obj} ${polish_obj} ${pipeline_obj} ${main_obj} -o ${MODULES_BIN} ${LDFLAGS}
 
 #main/%.o: main/%.cpp assemble/*.h sequence/*.h common/*.h repeat_graph/*.h contigger/*.h polishing/*.h
 main.o: main.cpp
@@ -69,5 +75,6 @@ clean:
 	rm -f ${assemble_obj}
 	rm -f ${polish_obj}
 	rm -f ${contigger_obj}
+	rm -f ${pipeline_obj}
 	rm -f ${main_obj}
 	rm -f ${MODULES_BIN}

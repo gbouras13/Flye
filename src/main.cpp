@@ -9,12 +9,13 @@ int assemble_main(int argc, char** argv);
 int repeat_main(int argc, char** argv);
 int contigger_main(int argc, char** argv);
 int polisher_main(int argc, char** argv);
+int pipeline_main(int argc, char** argv);
 
 int main(int argc, char** argv)
 {
 	if (argc < 2)
 	{
-		std::cerr << "Usage: flye-modules [assemble | repeat | contigger | polisher] ..." 
+		std::cerr << "Usage: flye-modules [assemble | repeat | contigger | polisher | pipeline] ..." 
 				  << std::endl;
 		return 1;
 	}
@@ -35,9 +36,15 @@ int main(int argc, char** argv)
 	{
 		return polisher_main(argc - 1, argv + 1);
 	}
+	else if (module == "pipeline")
+	{
+		//keeps argv[0] so the configuration directory can be found next to the binary
+		argv[1] = argv[0];
+		return pipeline_main(argc - 1, argv + 1);
+	}
 	else
 	{
-		std::cerr << "Usage: flye-modules [assemble | repeat | contigger | polisher] ..." 
+		std::cerr << "Usage: flye-modules [assemble | repeat | contigger | polisher | pipeline] ..." 
 				  << std::endl;
 		return 1;
 	}

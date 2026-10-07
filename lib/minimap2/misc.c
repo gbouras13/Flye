@@ -120,9 +120,16 @@ double realtime(void)
 	return tp.tv_sec + tp.tv_usec * 1e-6;
 }
 
+mm_output_hook_f mm_output_hook = 0;
+void *mm_output_hook_data = 0;
+
 void mm_err_puts(const char *str)
 {
 	int ret;
+	if (mm_output_hook) { // library users can take the output lines instead of stdout
+		mm_output_hook(str, mm_output_hook_data);
+		return;
+	}
 	ret = puts(str);
 	if (ret == EOF) {
 		perror("[ERROR] failed to write the results");

@@ -20,6 +20,10 @@ public:
 
 	void setOutputFile(const std::string& filename)
 	{
+		//modules can run several times in one process (flye-modules pipeline):
+		//reopening an already open stream would fail and silence the log
+		if (_logFile.is_open()) _logFile.close();
+		_logFile.clear();
 		_logFile.open(filename, std::ofstream::out | std::ofstream::app);
 		_logFileSet = true;
 		if (!_logFile.is_open()) 
