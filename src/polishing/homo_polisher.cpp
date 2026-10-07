@@ -262,7 +262,7 @@ size_t HomoPolisher::mostLikelyLen(char nucleotide,
 		scores.push_back(std::make_pair(likelihood, len));
 	}
 
-	std::sort(scores.begin(), scores.end(), 
+	std::stable_sort(scores.begin(), scores.end(), 
 			  [](const ScorePair& p1, const ScorePair& p2)
 			  {return p1.first > p2.first;});
 

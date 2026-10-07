@@ -38,7 +38,7 @@ T quantile(const std::vector<T>& vec, int percent)
 	//std::nth_element(vec.begin(), vec.begin() + vec.size() / 2, 
 	//				 vec.end());
 	auto sortedVec = vec;
-	std::sort(sortedVec.begin(), sortedVec.end());
+	std::stable_sort(sortedVec.begin(), sortedVec.end());
 	size_t targetId = std::min(vec.size() * (size_t)percent / 100, 
 							   vec.size() - 1);
 	return sortedVec[targetId];

@@ -108,7 +108,7 @@ void VertexIndex::buildIndexUnevenCoverage(int globalMinFreq, float selectRate,
 	Logger::get().debug() << "Sorting k-mer index";
 	for (const auto& kmerVec : _kmerIndex.lock_table())
 	{
-		std::sort(kmerVec.second.data, kmerVec.second.data + kmerVec.second.size,
+		std::stable_sort(kmerVec.second.data, kmerVec.second.data + kmerVec.second.size,
 				  [](const IndexChunk& p1, const IndexChunk& p2)
 				  	{return p1.get() < p2.get();});
 	}
@@ -197,7 +197,7 @@ std::vector<VertexIndex::KmerFreq>
 	}
 
 	if (topKmers.empty()) return {};
-	std::sort(topKmers.begin(), topKmers.end(),
+	std::stable_sort(topKmers.begin(), topKmers.end(),
 			  [](const KmerFreq& k1, const KmerFreq& k2)
 			   {return k1.freq > k2.freq;});
 	const size_t maxKmers = selectRate * topKmers.size();
@@ -326,7 +326,7 @@ void VertexIndex::buildIndexMinimizers(int minCoverage, int wndLen)
 	Logger::get().debug() << "Sorting k-mer index";
 	for (const auto& kmerVec : _kmerIndex.lock_table())
 	{
-		std::sort(kmerVec.second.data, kmerVec.second.data + kmerVec.second.size,
+		std::stable_sort(kmerVec.second.data, kmerVec.second.data + kmerVec.second.size,
 				  [](const IndexChunk& p1, const IndexChunk& p2)
 				  	{return p1.get() < p2.get();});
 	}

@@ -13,6 +13,7 @@
 #undef HAVE_KALLOC
 
 #include "edlib.h"
+#include "../common/portable_rand.h"
 
 using namespace std::chrono;
 
@@ -21,7 +22,7 @@ namespace
 	struct ThreadMemPool
 	{
 		ThreadMemPool():
-			prevCleanup(system_clock::now() + seconds(rand() % 60))
+			prevCleanup(system_clock::now() + seconds(portableRand() % 60))
 		{
 		   memPool = km_init();
 		}
@@ -411,7 +412,7 @@ std::vector<OverlapRange>
 	}
 
 	//sort intervals by acual length (not cigar length).
-	std::sort(goodIntervals.begin(), goodIntervals.end(),
+	std::stable_sort(goodIntervals.begin(), goodIntervals.end(),
 			  [](const IntervalDiv& i1, const IntervalDiv& i2)
 			  {return i1.realLen > i2.realLen;});
 	

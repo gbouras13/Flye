@@ -137,7 +137,7 @@ int RepeatResolver::resolveConnections(const std::vector<Connection>& connection
 			Logger::get().warning() << "Empty spanning connections";
 			continue;
 		}
-		std::sort(spanningConnections.begin(), spanningConnections.end(),
+		std::stable_sort(spanningConnections.begin(), spanningConnections.end(),
 				  [](const Connection c1, const Connection c2)
 				{return c1.readSeq.length() < c2.readSeq.length();});
 		uniqueConnections
@@ -531,7 +531,7 @@ void RepeatResolver::findRepeats()
 	//order might be important, process short edges first
 	std::vector<UnbranchingPath*> sortedPaths;
 	for (auto& path : unbranchingPaths) sortedPaths.push_back(&path);
-	std::sort(sortedPaths.begin(), sortedPaths.end(),
+	std::stable_sort(sortedPaths.begin(), sortedPaths.end(),
 			  [](const UnbranchingPath* p1, const UnbranchingPath* p2) 
 			  {return p1->length < p2->length;});
 

@@ -106,7 +106,7 @@ struct OverlapRange
 			{
 				std::swap(posPair.first, posPair.second);
 			}
-			std::sort(rev.kmerMatches->begin(), rev.kmerMatches->end(),
+			std::stable_sort(rev.kmerMatches->begin(), rev.kmerMatches->end(),
 					  [](const std::pair<int32_t, int32_t>& p1,
 						 const std::pair<int32_t, int32_t>& p2)
 						 {return p1.first < p2.first;});

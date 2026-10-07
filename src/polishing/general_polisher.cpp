@@ -39,7 +39,7 @@ void GeneralPolisher::polishBubble(Bubble& bubble) const
 	std::string prePolished = bubble.candidate;
 	if (bubble.branches.size() > PRE_POLISH * 2)
 	{
-		std::sort(bubble.branches.begin(), bubble.branches.end(),
+		std::stable_sort(bubble.branches.begin(), bubble.branches.end(),
 				  [](const std::string& s1, const std::string& s2)
 				     {return s1.length() < s2.length();});
 		size_t left = bubble.branches.size() / 2 - PRE_POLISH / 2;

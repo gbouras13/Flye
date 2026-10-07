@@ -118,7 +118,7 @@ std::vector<GraphAlignment>
 
 	activeChains.insert(activeChains.end(), frozenChains.begin(), 
 						frozenChains.end());	
-	std::sort(activeChains.begin(), activeChains.end(),
+	std::stable_sort(activeChains.begin(), activeChains.end(),
 			  [](const Chain& c1, const Chain& c2)
 			  {return c1.score > c2.score;});
 
@@ -229,7 +229,7 @@ void ReadAligner::alignReads()
 			}
 
 		}
-		std::sort(alignments.begin(), alignments.end(),
+		std::stable_sort(alignments.begin(), alignments.end(),
 		  [](const EdgeAlignment& e1, const EdgeAlignment& e2)
 			{return e1.overlap.curBegin < e2.overlap.curBegin;});
 		auto readChains = this->chainReadAlignments(alignments);

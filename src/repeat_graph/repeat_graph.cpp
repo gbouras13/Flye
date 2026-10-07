@@ -42,7 +42,7 @@ namespace
 	template<class T, class KeyFn>
 	void sortByKey(std::vector<T>& container, KeyFn keyFn)
 	{
-		std::sort(container.begin(), container.end(),
+		std::stable_sort(container.begin(), container.end(),
 				  [keyFn](const T& k1, const T& k2)
 				  {return keyFn(k1) < keyFn(k2);});
 	}

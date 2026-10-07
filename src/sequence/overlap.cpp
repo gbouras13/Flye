@@ -20,6 +20,7 @@
 #include "alignment.h"
 #include "../common/config.h"
 #include "../common/utils.h"
+#include "../common/portable_rand.h"
 #include "../common/parallel.h"
 #include "../common/disjoint_set.h"
 #include "../common/bfcontainer.h"
@@ -201,7 +202,7 @@ OverlapDetector::getSeqOverlaps(const FastaRecord& fastaRec,
 							(std::chrono::system_clock::now() - timeStart).count();
 	timeStart = std::chrono::system_clock::now();
 
-	std::sort(vecMatches.begin(), vecMatches.end(),
+	std::stable_sort(vecMatches.begin(), vecMatches.end(),
 			  [](const KmerMatch& k1, const KmerMatch& k2)
 			  {return k1.extId != k2.extId ? k1.extId < k2.extId : 
 			  								 k1.curPos < k2.curPos;});
@@ -272,7 +273,7 @@ OverlapDetector::getSeqOverlaps(const FastaRecord& fastaRec,
 		bool extSorted = extLen > curLen;
 		if (extSorted)
 		{
-			std::sort(matchesList.begin(), matchesList.end(),
+			std::stable_sort(matchesList.begin(), matchesList.end(),
 					  [](const KmerMatch& k1, const KmerMatch& k2)
 					  {return k1.extPos < k2.extPos;});
 		}
@@ -334,7 +335,7 @@ OverlapDetector::getSeqOverlaps(const FastaRecord& fastaRec,
 		//initiate chains from the highest scores in the table (e.g. local maximums)
 		std::vector<size_t> orderedScores(backtrackTable.size());
 		std::iota(orderedScores.begin(), orderedScores.end(), 0);
-		std::sort(orderedScores.begin(), orderedScores.end(),
+		std::stable_sort(orderedScores.begin(), orderedScores.end(),
 				  [](size_t a, size_t b) {return scoreTable[a] > scoreTable[b];});
 
 		//for (int32_t chainStart = backtrackTable.size() - 1; 
@@ -424,7 +425,7 @@ OverlapDetector::getSeqOverlaps(const FastaRecord& fastaRec,
 								  _vertexIndex.getSampleRate() / normLen;
 				matchRate = std::min(matchRate, 1.0f);
 				//float repeatRate = (float)filteredPositions / ovlp.curRange();
-				ovlp.seqDivergence = std::log(1 / matchRate) / kmerSize;
+				ovlp.seqDivergence = (float)std::log((double)(1 / matchRate)) / kmerSize;
 				//ovlp.seqDivergence += _estimatorBias;
 				extOverlaps.push_back(ovlp);
 			}
@@ -433,7 +434,7 @@ OverlapDetector::getSeqOverlaps(const FastaRecord& fastaRec,
 		//now we have a lits of (possibly multiple) putative overlaps
 		//agains a singe ext sequence. Now, select the list of primary overlaps
 		std::vector<OverlapRange> primaryOverlaps;
-		std::sort(extOverlaps.begin(), extOverlaps.end(),
+		std::stable_sort(extOverlaps.begin(), extOverlaps.end(),
 				  [](const OverlapRange& r1, const OverlapRange& r2)
 				  {return r1.score > r2.score;});
 
@@ -743,7 +744,7 @@ void OverlapContainer::filterOverlaps()
 		newOvlps.shrink_to_fit();
 		overlaps = std::move(newOvlps);
 
-		std::sort(overlaps.begin(), overlaps.end(), 
+		std::stable_sort(overlaps.begin(), overlaps.end(), 
 				  [](const OverlapRange& o1, const OverlapRange& o2)
 				  {return o1.curBegin < o2.curBegin;});
 
@@ -763,7 +764,7 @@ void OverlapContainer::estimateOverlaperParameters()
 	std::vector<FastaRecord::Id> readsToCheck;
 	for (size_t i = 0; i < MAX_SEQS; ++i) 
 	{
-		size_t randId = rand() % _queryContainer.iterSeqs().size();
+		size_t randId = portableRand() % _queryContainer.iterSeqs().size();
 		readsToCheck.push_back(_queryContainer.iterSeqs()[randId].id);
 	}
 

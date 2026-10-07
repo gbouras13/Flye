@@ -243,7 +243,7 @@ HaplotypeResolver::VariantPaths
 	}
 	if (outPaths.empty()) return VariantPaths();
 
-	std::sort(outPaths.begin(), outPaths.end(),
+	std::stable_sort(outPaths.begin(), outPaths.end(),
 			  [](const GraphAlignment& a1, const GraphAlignment& a2)
 			  {return a1.back().overlap.curEnd - a1.front().overlap.curEnd >
 					  a2.back().overlap.curEnd - a2.front().overlap.curEnd;});
@@ -456,7 +456,7 @@ HaplotypeResolver::VariantPaths
 		}
 	}
 	if (bridgingReads.empty()) throw std::runtime_error("No bridging reads!");
-	std::sort(bridgingReads.begin(), bridgingReads.end(),
+	std::stable_sort(bridgingReads.begin(), bridgingReads.end(),
 			  [](const GraphAlignment& a1, const GraphAlignment& a2)
 			  {return a1.back().overlap.curBegin - a1.front().overlap.curEnd <
 			  		  a2.back().overlap.curBegin - a2.front().overlap.curEnd;});

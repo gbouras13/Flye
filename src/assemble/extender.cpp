@@ -83,7 +83,7 @@ Extender::ExtensionInfo Extender::extendDisjointig(FastaRecord::Id startRead)
 		numExtensions.push_back(extensions.size());
 
 		//sort from longes to shortest overlap
-		std::sort(extensions.begin(), extensions.end(), 
+		std::stable_sort(extensions.begin(), extensions.end(), 
 				  [](const OverlapRange& a, const OverlapRange& b)
 					 {return a.curRange() > b.curRange();});
 
@@ -393,7 +393,7 @@ void Extender::assembleDisjointigs()
 	};
 
 	//deterministic shuffling
-	std::sort(allReads.begin(), allReads.end(), 
+	std::stable_sort(allReads.begin(), allReads.end(), 
 			  [](const FastaRecord::Id& id1, const FastaRecord::Id& id2)
 			  {return id1.hash() < id2.hash();});
 	processInParallel(allReads, threadWorker,
@@ -412,7 +412,7 @@ void Extender::assembleDisjointigs()
 				sortedByLength.push_back(seq.id);
 			}
 		}
-		std::sort(sortedByLength.begin(), sortedByLength.end(),
+		std::stable_sort(sortedByLength.begin(), sortedByLength.end(),
 				  [this](FastaRecord::Id idOne, FastaRecord::Id idTwo)
 				  	{return _readsContainer.seqLen(idOne) > 
 							_readsContainer.seqLen(idTwo);});

@@ -12,6 +12,7 @@
 
 #include "sequence_container.h"
 #include "../common/logger.h"
+#include "../common/portable_rand.h"
 
 size_t SequenceContainer::g_nextSeqId = 0;
 
@@ -115,7 +116,7 @@ int SequenceContainer::computeNxStat(float fraction) const
 		readLengths.push_back(read.sequence.length());
 		totalLengh += read.sequence.length();
 	}
-	std::sort(readLengths.begin(), readLengths.end(),
+	std::stable_sort(readLengths.begin(), readLengths.end(),
 			  [](int32_t a, int32_t b) {return a > b;});
 
 	int32_t nx = 0;
@@ -324,7 +325,7 @@ void SequenceContainer::validateSequence(std::string& sequence)
 	{
 		if (DnaSequence::dnaToId(sequence[i]) == -1U)
 		{
-			sequence[i] = VALID_CHARS[rand() % 4];
+			sequence[i] = VALID_CHARS[portableRand() % 4];
 		}
 	}
 }

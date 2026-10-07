@@ -12,6 +12,7 @@
 #include "../common/config.h"
 #include "../common/logger.h"
 #include "chimera.h"
+#include "../common/portable_rand.h"
 
 
 
@@ -73,7 +74,7 @@ void ChimeraDetector::estimateGlobalCoverage()
 	int64_t num = 0;
 	for (const auto& seq : _seqContainer.iterSeqs())
 	{
-		if (rand() % sampleRate) continue;
+		if (portableRand() % sampleRate) continue;
 		auto coverage = this->getReadCoverage(seq.id, _ovlpContainer.lazySeqOverlaps(seq.id));
 		bool nonZero = false;
 		for (auto c : coverage) nonZero |= (c != 0);
