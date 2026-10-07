@@ -115,9 +115,12 @@ void BubbleProcessor::writeBubbles(const std::vector<Bubble>& bubbles)
 {
 	for (auto& bubble : bubbles)
 	{
+		//'\n' rather than std::endl: a flush per line is a write() syscall per
+		//bubble under _stateMutex, which is very slow where syscalls are proxied
+		//(e.g. WebAssembly threads); the stream is flushed when closed
 		_consensusFile << ">" << bubble.header << " " << bubble.position
-			 		   << " " << bubble.branches.size() << " " << bubble.subPosition << std::endl
-			 		   << bubble.candidate << std::endl;
+			 		   << " " << bubble.branches.size() << " " << bubble.subPosition << '\n'
+			 		   << bubble.candidate << '\n';
 	}
 }
 
